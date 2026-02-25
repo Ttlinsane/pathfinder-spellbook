@@ -1,0 +1,78 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  background: whitesmoke;
+  margin: 5px;
+}
+
+body {
+  background: linear-gradient(145deg, #d9aade, #e3d5a3);
+  display: flex;
+  flex-flow: column wrap;
+  align-items: center;
+  min-height: 100vh;
+  font-family: "Georgia", serif;
+}
+.title p {
+  font-size: medium;
+  margin: 5px;
+  padding: 3px;
+  display: flex;
+  flex-flow: column;
+  text-decoration: none;
+}
+
+.title {
+  background-color: cadetblue;
+  font-size: large;
+  font-weight: bold;
+  text-decoration: none;
+  border-radius: 5px;
+}
+
+.content a {
+  font-size: smaller;
+}
+
+#spellSelect {
+  position: absolute;
+  display: flex;
+  right: 5px;
+  max-width: 100px;
+  max-height: 100vh;
+  border-radius: 4px;
+  background-color: blanchedalmond;
+  display: inline-block;
+}
+
+.spell_themselves a {
+  background-color: rgba(240, 248, 255, 0.786);
+  backdrop-filter: blur(3px);
+  padding: 20px;
+  box-shadow: 10px 5px 5px red;
+  left: 0px;
+  display: flex;
+  position: relative;
+  margin: 0px;
+  padding: 10px;
+  flex-direction: row;
+  flex-wrap: wrap;
+  flex: 100px;
+  font-size: large;
+  color: black;
+}
+
+.schoolMul {
+  display: flex;
+  flex-flow: column;
+  flex-wrap: wrap;
+  gap: 8px 16px;
+  margin: 0.4rem;
+}
+
+.pagination {
+  display: flex;
+  position: relative;
+  flex-flow: row;
+}

@@ -1,0 +1,18 @@
+    {%extends "base.html"%}
+    {% block content %}
+    <section class="content">
+        <h1 class="title">
+            法术：{{ spell.name }}
+            <p class="sc">学派：{{ spell["school"] }}</p>
+            <p class="le">等级：{{ spell.level }}</p>
+            <p class="ti">施法时间：{{ spell.casting_time }}</p>
+            <p class="co">要素：{{ spell.components }}</p>
+            <p class="ra">范围：{{ spell.range }}</p>
+            <p class="ef">{{ spell.effect }}：{{ spell.aiming }}</p>
+            <p class="du">持续时间：{{ spell.duration }}</p>
+            <p class="sa">豁免：{{ spell.saving_throw }}</p>
+            <p class="re">法术抗力：{{ spell.resistance }}</p>
+            <p class="de">{{ spell.description }}</p>
+        </h1>
+        <a href="javascript:history.back()">⬅️返回搜索结果</a>
+        {% endblock%}

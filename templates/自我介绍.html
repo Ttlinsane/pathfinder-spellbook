@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>WizardProperty</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            color: #eee;
+            font-family: "Segoe UI", sans-serif;
+            min-height: 100vh;
+            padding: 40px;
+        }
+
+
+        .ability dt {
+            font-size: medium;
+            color: #aaa;
+        }
+
+        .ability dd {
+            font-weight: bold;
+            margin-top: 4px;
+            font-size: 27px;
+            margin-top: 8px;
+            color: #4ecca3;
+        }
+
+        .ability::before {
+            flex-basis: 100%;
+            content: "⚔️基础属性";
+            font-size: 20px;
+            position: relative;
+            width: 1000px;
+            top: -8px;
+            left: 8px;
+            background: transparent;
+            padding: 4px 12px;
+            color: #e94560;
+            border-radius: 8px;
+            border-bottom: 2px solid #000000;
+            /* 加条下划线 */
+            padding-bottom: 8px;
+            margin-bottom: 8px;
+        }
+
+        .ability {
+            position: relative;
+            /* 给 ::before 的 absolute 定位提供参照 */
+            display: flex;
+            flex-flow: row wrap;
+            justify-content: flex-start;
+            gap: 16px;
+
+            max-width: auto;
+            margin: 0 auto;
+            padding: 24px;
+            border-bottom: 2px solid #e94560;
+            border-radius: 12px;
+            background: linear-gradient(180deg, rgba(255, 255, 255, 0.3), rgba(0, 0, 0, 0.3));
+            backdrop-filter: blur(8px);
+        }
+
+        @media (max-width:600px) {
+            .ability {
+                flex: 1 1 calc(33.33% - 12px);
+            }
+        }
+
+        @media (max-width:400px) {
+            .ability {
+                flex: 1 1 calc(33.33% - 12px);
+            }
+        }
+
+        @pause {}
+
+        .ability dl {
+            display: flex;
+            flex-flow: row wrap;
+            flex: 0.1 1 100px;
+            justify-content: center;
+            padding: 8px 0;
+            border-bottom: 1px dashed #333;
+            transition: transform 0.2s, box-shadow 0.2s;
+            background: rgba(255, 255, 255, 0.8);
+            border-radius: 8px;
+            text-align: center;
+        }
+
+        .ability dl:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 8px 24px rgba(78, 204, 163, 0.3);
+        }
+
+        .start {
+            background: white;
+            text-decoration: none;
+            border-radius: 4px;
+        }
+
+        .start:hover {
+            animation: pulse 0.2s ease-in-out 2s;
+        }
+
+        @keyframes pulse {
+            0% {
+                transform: scale(1);
+            }
+
+            50% {
+                transform: scale(1.05);
+            }
+
+            100% {
+                transform: scale(1);
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <section class="ability">
+        <dl class="Constitution">
+            <dt>体质</dt>
+            <dd>18</dd>
+        </dl>
+        <dl class="Intelligence">
+            <dt>智力</dt>
+            <dd>18</dd>
+        </dl>
+        <dl class="Strength">
+            <dt>力量</dt>
+            <dd>18</dd>
+        </dl>
+        <dl class="Dexterity">
+            <dt>敏捷</dt>
+            <dd>18</dd>
+        </dl>
+        <dl class="Wisdom">
+            <dt>感知</dt>
+            <dd>18</dd>
+        </dl>
+        <dl class="Charisma">
+            <dt>魅力</dt>
+            <dd>18</dd>
+        </dl>
+    </section>
+    <section class="property">
+        <dl class="casting_spells">
+        </dl>
+    </section>
+    <section class="SpellBook">
+        <dl class="level_0">
+            <dl class=''></dl>
+        </dl>
+        <dl class="level_1">
+            <dl class=''></dl>
+        </dl>
+    </section>
+    <a class="start" href="/search">开始！</a>
+</body>
+<script>
+    const roll = () => Math.floor(Math.random() * 256);
+    const col1 = roll();
+    const col2 = roll();
+    const col3 = roll();
+    const col4 = roll();
+    const col5 = roll();
+    const col6 = roll();
+
+    const toHex = n => n.toString(16).padStart(2, '0');
+
+    const color1 = `${toHex(col1)}${toHex(col2)}${toHex(col3)}`;
+    const color1_5 = `${toHex(255 - col1)}${toHex(255 - col2)}${toHex(255 - col3)}`;
+
+    const color2 = `${toHex(col4)}${toHex(col5)}${toHex(col6)}`;
+    const color2_5 = `${toHex(255 - col4)}${toHex(255 - col5)}${toHex(255 - col6)}`;
+
+    document.body.style.background = `linear-gradient(90deg, #${color1}, #${color2})`;
+    document.querySelectorAll(".ability dl dt").forEach(dt => { dt.style.color = `#${color1_5}` });
+    document.querySelectorAll(".ability dl dd").forEach(dd => { dd.style.color = `#${color2_5}` });
+    document.querySelectorAll(".ability").forEach(d => { d.style.background = `linear-gradient(270deg, #${color1}, #${color2})` });
+
+</script>
+
+</body>
+
+</html>
