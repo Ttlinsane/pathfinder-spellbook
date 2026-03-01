@@ -12,28 +12,42 @@ def search():
     #result per page
     rpp = request.args.get("rpp",current_app.config["ITEMS_PER_PAGE"],type=int)
     page = request.args.get("page",1,type=int)
+    classMul = request.args.get("classMul")
     schoolMul = request.args.getlist("schoolMul")    
+    levelMul = request.args.getlist("levelMul")
     offset = (page-1)*rpp
     #分开两个拼字符，算页码不得已而为之
-    search_key = "SELECT * FROM spells WHERE "
-    count_key ="SELECT COUNT(*) FROM spells WHERE "
-    url_args = f"kw={kw}&rpp={rpp}"
+    search_key = "SELECT DISTINCT s.* FROM spells s JOIN levels l ON s.name = l.name WHERE "
+    count_key ="SELECT COUNT(DISTINCT s.name) FROM spells s JOIN levels l ON s.name = l.name WHERE "
+    url_args = f"class={classMul}&kw={kw}&rpp={rpp}"
     #这里也用列表方便干净
     params = []
     #想了想还是吧条件都先写上吧，大不了全选
-    search_key += " (name LIKE ? OR description LIKE ? OR effect LIKE ?)"
-    count_key += " (name LIKE ? OR description LIKE ? OR effect LIKE ?)"
+    search_key += " (s.name LIKE ? OR s.description LIKE ? OR s.effect LIKE ?)"
+    count_key += " (s.name LIKE ? OR s.description LIKE ? OR s.effect LIKE ?)"    
     if not kw:
         params.extend([f"%%",f"%%",f"%%"])
     else:
         params.extend([f"%{kw}%",f"%{kw}%",f"%{kw}%"])
+    if classMul:
+        search_key += " AND l.class = ?"
+        count_key += " AND l.class = ?"
+        params.extend([f"{classMul}"])
+    if levelMul:
+        levels_quest = ",".join("?" for _ in levelMul)
+        search_key += f" AND l.level IN ({levels_quest})"
+        count_key += f" AND l.level IN ({levels_quest})"
+        for l in levelMul:
+            url_args += f"&levelMul={l}"
+        params.extend(levelMul)
+
     if not schoolMul:
         schoolMul=["防护","咒法","预言","惑控","幻术","死灵","变化","塑能","通用"]
     for s in schoolMul:
         url_args += f"&schoolMul={s}"    
     placeholder = ",".join("?" for _ in schoolMul)
-    search_key += f" AND school IN ({placeholder})"
-    count_key += f" AND school IN ({placeholder})"
+    search_key += f" AND s.school IN ({placeholder})"
+    count_key += f" AND s.school IN ({placeholder})"
     params.extend(schoolMul)
     #收集完毕，开始找总页码
     cursor.execute(count_key,tuple(params))

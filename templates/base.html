@@ -3,7 +3,6 @@
 
 <head>
     <title>{{ config.SITE_NAME }}</title>
-    <!-- 写在 base.html 的 head 里 -->
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
 
@@ -11,7 +10,7 @@
     <div id="spellSelect">
         <div class="dropdown">
             <form action="/search" method="get">
-                <input type="text" name="kw" placeholder="输入法术名...">
+                <input type="text" name="kw" placeholder="输入法术关键词...">
                 <button type="submit">搜索</button>
                 <input type="text" name="rpp" placeholder="每页显示条数">
                 <div class="schoolMul">
@@ -25,6 +24,53 @@
                     <input type="checkbox" id="塑能" name="schoolMul" value="塑能" checked /><label for="塑能">塑能</label>
                     <input type="checkbox" id="通用" name="schoolMul" value="通用" checked /><label for="通用">通用</label>
                 </div>
+                <label for="classes">选择你的职业：</label>
+                <select name="classMul" id="classes">
+                    <option value="">==未选择==</option>
+                    <option value='adept'>Adept</option>
+                    <option value='alchemist'>Alchemist</option>
+                    <option value='antipaladin'>Antipaladin</option>
+                    <option value='arcanist'>Arcanist</option>
+                    <option value='bard'>Bard</option>
+                    <option value='bloodrager'>Bloodrager</option>
+                    <option value='cleric'>Cleric</option>
+                    <option value='druid'>Druid</option>
+                    <option value='hunter'>Hunter</option>
+                    <option value='inquisitor'>Inquisitor</option>
+                    <option value='investigator'>Investigator</option>
+                    <option value='magus'>Magus</option>
+                    <option value='medium'>Medium</option>
+                    <option value='mesmerist'>Mesmerist</option>
+                    <option value='occultist'>Occultist</option>
+                    <option value='oracle'>Oracle</option>
+                    <option value='paladin'>Paladin</option>
+                    <option value='psychic'>Psychic</option>
+                    <option value='ranger'>Ranger</option>
+                    <option value='redmantisassassin'>Red Mantis Assassin</option>
+                    <option value='sahirafiyun'>Sahir-Afiyun</option>
+                    <option value='shaman'>Shaman</option>
+                    <option value='skald'>Skald</option>
+                    <option value='sorcerer'>Sorcerer</option>
+                    <option value='spiritualist'>Spiritualist</option>
+                    <option value='summoner'>Summoner</option>
+                    <option value='summoner (unchained)'>Summoner (Unchained)</option>
+                    <option value='warpriest'>Warpriest</option>
+                    <option value='witch'>Witch</option>
+                    <option value='wizard'>Wizard</option>
+                </select>
+                <select name="levelMul" id="levels" multiple>
+                    <option value="0">戏法</option>
+                    <option value="1">I环</option>
+                    <option value="2">II环</option>
+                    <option value="3">III环</option>
+                    <option value="4">IV环</option>
+                    <option value="5">V环</option>
+                    <option value="6">VI环</option>
+                    <option value="7">VII环</option>
+                    <option value="8">VIII环</option>
+                    <option value="9">IX环</option>
+                </select>
+            </form>
         </div>
     </div>
     {% block content %}{% endblock %}

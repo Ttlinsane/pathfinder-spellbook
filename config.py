@@ -8,7 +8,7 @@ class Config:
     SITE_NAME = "Pathfinder 法术档案馆"
     
     # 数据库路径（原来在 db.py 里的，现在抽到这里）
-    DATABASE = BASE_DIR / "data" / "spells.db"
+    DATABASE = BASE_DIR / "data" / "spell_level.db"
     
     # 默认每页显示条数（原来 search.py 里的 25）
     ITEMS_PER_PAGE = 25
