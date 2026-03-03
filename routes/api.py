@@ -16,17 +16,13 @@ def api_spell():
     args = get_info(kw, page, rpp, classMul, levelMul, schoolMul)
     # 返回的row里的东西是dict
     results = [dict(r) for r in args["row"]]
-    # class c schools s levels l
-    result_c = classMul
-    result_s = [r for r in schoolMul]
-    result_l = [r for r in levelMul]
     results_json = {
         # 先返回总数，在db里添加了返回值total
         "total": args["total"],
         "keyword": kw,
-        "classMul": result_c,
-        "schoolMul": result_s,
-        "levelMul": result_l,
+        "classMul": classMul,
+        "schoolMul": schoolMul,
+        "levelMul": levelMul,
         "page": page,
         "rpp": rpp,
         "results": results,
@@ -36,22 +32,24 @@ def api_spell():
 
 @api_bp.route("/spells/<spell_name>")
 def spell_detail(spell_name):
-    row = get_details(spell_name)
+    rows,rowl = get_details(spell_name)
+    #解包，解包！
     result_json = {"error": "Spell not found"}
-    if row:
+    if rows:
+        level_l = {i[0]:i[1] for i in rowl if i}
         result_json = {
-            "name": row["name"],
-            "school": row["school"],
-            "level": row["level_str"],
-            "casting_time": row["casting_time"],
-            "components": row["components"],
-            "range_": row["range_"],
-            "effect":row["effect"],
-            "aiming":row["aiming"],
-            "duration": row["duration"],
-            "saving_throw": row["saving_throw"],
-            "resistance": row["resistance"],
-            "description": row["description"],
+            "name": rows["name"],
+            "school": rows["school"],
+            "level": level_l,
+            "casting_time": rows["casting_time"],
+            "components": rows["components"],
+            "range_": rows["range_"],
+            "effect":rows["effect"],
+            "aiming":rows["aiming"],
+            "duration": rows["duration"],
+            "saving_throw": rows["saving_throw"],
+            "resistance": rows["resistance"],
+            "description": rows["description"],
         }
         return jsonify(result_json)
     return jsonify(result_json),404

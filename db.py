@@ -61,5 +61,7 @@ def get_details(spell_name):
     conn = get_db()
     cursor = conn.cursor()
     cursor.execute("SELECT * FROM spells WHERE name=? COLLATE NOCASE", (spell_name,))
-    roww = cursor.fetchone()
-    return roww
+    rows = cursor.fetchone()
+    cursor.execute("SELECT class,level FROM levels WHERE name=? COLLATE NOCASE",(spell_name,))
+    rowl = cursor.fetchall()
+    return (rows,rowl)

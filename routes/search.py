@@ -6,7 +6,7 @@ search_bp = Blueprint("search", __name__)
 
 @search_bp.route("/search")
 def search():
-    kw = request.args.get("kw", f"%%", type=str)
+    kw = request.args.get("kw", "", type=str)
     # result per page
     rpp = request.args.get("rpp", current_app.config["ITEMS_PER_PAGE"], type=int)
     page = request.args.get("page", 1, type=int)
@@ -28,7 +28,7 @@ def search():
 
 @search_bp.route("/search/<spell_name>")
 def spell_detail(spell_name):
-    roww = get_details(spell_name)
+    roww = get_details(spell_name)[0]
     if roww:
         return render_template("spell_details.html", spell=roww)
     else:
