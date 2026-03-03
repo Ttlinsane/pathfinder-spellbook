@@ -9,7 +9,13 @@ def api_spell():
     kw = request.args.get("kw", "", type=str)
     # result per page
     rpp = request.args.get("rpp", current_app.config["ITEMS_PER_PAGE"], type=int)
+    if rpp <= 0:
+        return jsonify({"error": "rpp must be bigger than ZERO!"}), 400
+    if rpp >= 100:
+        rpp = 100
     page = request.args.get("page", 1, type=int)
+    if page <= 0:
+        return jsonify({"error": "page must be bigger than ZERO!"}), 400
     classMul = request.args.get("classMul")
     schoolMul = request.args.getlist("schoolMul")
     levelMul = request.args.getlist("levelMul")
@@ -32,11 +38,11 @@ def api_spell():
 
 @api_bp.route("/spells/<spell_name>")
 def spell_detail(spell_name):
-    rows,rowl = get_details(spell_name)
-    #解包，解包！
+    rows, rowl = get_details(spell_name)
+    # 解包，解包！
     result_json = {"error": "Spell not found"}
     if rows:
-        level_l = {i[0]:i[1] for i in rowl if i}
+        level_l = {i[0]: i[1] for i in rowl if i}
         result_json = {
             "name": rows["name"],
             "school": rows["school"],
@@ -44,12 +50,12 @@ def spell_detail(spell_name):
             "casting_time": rows["casting_time"],
             "components": rows["components"],
             "range_": rows["range_"],
-            "effect":rows["effect"],
-            "aiming":rows["aiming"],
+            "effect": rows["effect"],
+            "aiming": rows["aiming"],
             "duration": rows["duration"],
             "saving_throw": rows["saving_throw"],
             "resistance": rows["resistance"],
             "description": rows["description"],
         }
         return jsonify(result_json)
-    return jsonify(result_json),404
+    return jsonify(result_json), 404
