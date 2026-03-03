@@ -3,9 +3,19 @@
   padding: 0;
   box-sizing: border-box;
   background: whitesmoke;
-  margin: 5px;
 }
 
+@media screen and (max-width: 600px) {
+  .box {
+    background: lightblue;
+  }
+}
+
+@media screen and (min-width: 600px) {
+  .box {
+    background: pink;
+  }
+}
 body {
   background: linear-gradient(145deg, #d9aade, #e3d5a3);
   display: flex;
@@ -39,7 +49,7 @@ body {
   position: absolute;
   display: flex;
   right: 5px;
-  max-width: 100px;
+  max-width: 200px;
   max-height: 100vh;
   border-radius: 4px;
   background-color: blanchedalmond;
@@ -52,7 +62,7 @@ body {
   padding: 20px;
   box-shadow: 10px 5px 5px red;
   left: 0px;
-  display: flex;
+  display: block;
   position: relative;
   margin: 0px;
   padding: 10px;
