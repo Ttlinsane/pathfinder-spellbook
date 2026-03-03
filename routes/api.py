@@ -1,24 +1,19 @@
 from flask import Blueprint, jsonify, request, current_app
 from db import get_info, get_details
+from routes.helpers import get_keywords
 
 api_bp = Blueprint("api", __name__, url_prefix="/api")
 
 
 @api_bp.route("/spells")
 def api_spell():
-    kw = request.args.get("kw", "", type=str)
-    # result per page
-    rpp = request.args.get("rpp", current_app.config["ITEMS_PER_PAGE"], type=int)
-    if rpp <= 0:
-        return jsonify({"error": "rpp must be bigger than ZERO!"}), 400
-    if rpp >= 100:
-        rpp = 100
-    page = request.args.get("page", 1, type=int)
-    if page <= 0:
-        return jsonify({"error": "page must be bigger than ZERO!"}), 400
-    classMul = request.args.get("classMul")
-    schoolMul = request.args.getlist("schoolMul")
-    levelMul = request.args.getlist("levelMul")
+    keywords = get_keywords()
+    kw = keywords["kw"]
+    rpp = keywords["rpp"]
+    page = keywords["page"]
+    classMul = keywords["classMul"]
+    levelMul = keywords["levelMul"]
+    schoolMul = keywords["schoolMul"]
     args = get_info(kw, page, rpp, classMul, levelMul, schoolMul)
     # 返回的row里的东西是dict
     results = [dict(r) for r in args["row"]]

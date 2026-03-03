@@ -1,25 +1,21 @@
-from flask import request, render_template, Blueprint, current_app,jsonify
+from flask import request, render_template, Blueprint, current_app
 from db import get_info, get_details
+from routes.helpers import get_keywords
 
 search_bp = Blueprint("search", __name__)
 
 
 @search_bp.route("/search")
 def search():
-    kw = request.args.get("kw", "", type=str)
-    # result per page
-    rpp = request.args.get("rpp", current_app.config["ITEMS_PER_PAGE"], type=int)
-    if rpp <= 0:
-        rpp = 25
-    if rpp >= 100:
-        rpp = 100
-    page = request.args.get("page", 1, type=int)
-    if page <= 0:
-        page = 1
-    classMul = request.args.get("classMul")
-    schoolMul = request.args.getlist("schoolMul")
-    levelMul = request.args.getlist("levelMul")
-    args = get_info(kw, page, rpp, classMul, levelMul, schoolMul)
+    keywords = get_keywords()
+    kw = keywords["kw"]
+    rpp = keywords["rpp"]
+    page = keywords["page"]
+    classMul = keywords["classMul"]
+    levelMul = keywords["levelMul"]
+    schoolMul = keywords["schoolMul"]
+    #此处可以用get_info(**keywords)解包使用，但需要注意需要返回参数名和字典key完全一致
+    args = get_info(kw,page,rpp,classMul,levelMul,schoolMul)
     url_args = f"class={classMul}&kw={kw}&rpp={rpp}"
     """classMul,schoolMul,levelMul,kw,rpp"""
     if levelMul:
