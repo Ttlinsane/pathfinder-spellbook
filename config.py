@@ -12,3 +12,6 @@ class Config:
     
     # 默认每页显示条数（原来 search.py 里的 25）
     ITEMS_PER_PAGE = 25
+
+    # 是这么来的吗？
+    SECRET_KEY = "f4as5f64as56f"

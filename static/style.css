@@ -86,3 +86,11 @@ body {
   position: relative;
   flex-flow: row;
 }
+
+.login_register{
+  text-decoration: none;
+  display: grid;
+  position: absolute;
+  right:5px;
+  bottom:5px;
+}

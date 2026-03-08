@@ -1,8 +1,9 @@
-from routes.search import search_bp
 from flask import Flask, render_template
-from db import close_connection
-from routes.api import api_bp
+from db import close_connection,init_db
 from config import Config
+from routes.search import search_bp
+from routes.api import api_bp
+from routes.auth import auth_bp
 
 app = Flask(__name__)
 #注册config用作current.config
@@ -18,6 +19,11 @@ def index():
 app.teardown_appcontext(close_connection)
 app.register_blueprint(search_bp)
 app.register_blueprint(api_bp)
+app.register_blueprint(auth_bp)
+
+#添加user表，但依赖g对象所以需要在上下文中
+with app.app_context():
+    init_db()
 
 if __name__ == "__main__":
     app.run(debug=True)
