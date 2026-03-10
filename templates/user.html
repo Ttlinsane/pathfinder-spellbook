@@ -1,0 +1,15 @@
+{%extends "自我介绍.html"%}
+{% block favorites %}
+{% if session.user %}
+<span>欢迎，{{ session.user }}</span>
+<a href="/auth/logout">登出</a>
+<section class="SpellBook">
+    {% for i in results %}
+    <a href="/search/{{i.name}}">{{i.name}}</a>
+    {%endfor%}
+</section>
+{% else %}
+<a href="/auth/login">登录</a>
+<a href="/auth/register">注册</a>
+{%endif%}
+{% endblock %}

@@ -1,5 +1,5 @@
-from flask import request,current_app
-
+from flask import request,current_app,redirect,url_for,session
+from functools import wraps
 def get_keywords():
     kw = request.args.get("kw", "", type=str)
     # result per page
@@ -15,3 +15,12 @@ def get_keywords():
     schoolMul = request.args.getlist("schoolMul")
     levelMul = request.args.getlist("levelMul")
     return {"kw":kw,"rpp":rpp,"page":page,"classMul":classMul,"schoolMul":schoolMul,"levelMul":levelMul}
+
+def login_required(func):
+    @wraps(func) #防装饰器改名
+    def wrapper(*args,**kwargs):
+        if "user" not in session:
+            return redirect(url_for("search.search"))
+        else:
+            return func(*args,**kwargs)
+    return wrapper

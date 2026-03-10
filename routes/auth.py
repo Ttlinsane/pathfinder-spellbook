@@ -1,5 +1,6 @@
 from flask import Blueprint,request,session,redirect,render_template,url_for
 from db import verify_user,register_user
+from .helpers import login_required
 
 #注意格式！("...",__name__,prefix="...")
 auth_bp = Blueprint("auth",__name__,url_prefix="/auth")
@@ -16,6 +17,7 @@ def login():
     return render_template("login.html")
 
 @auth_bp.route("/logout")
+@login_required
 def logout():
     session.clear()
     return redirect(url_for('search.search'))

@@ -78,8 +78,6 @@
             }
         }
 
-        @pause {}
-
         .ability dl {
             display: flex;
             flex-flow: row wrap;
@@ -121,50 +119,23 @@
                 transform: scale(1);
             }
         }
+
+        .SpellBook {
+            display: grid;
+            background:whitesmoke;
+        }
+
+        .SpellBook a {
+            margin: 2px;
+            padding: 2px;
+            text-decoration: none;
+            background: violet;
+        }
     </style>
 </head>
 
 <body>
-
-    <section class="ability">
-        <dl class="Constitution">
-            <dt>体质</dt>
-            <dd>18</dd>
-        </dl>
-        <dl class="Intelligence">
-            <dt>智力</dt>
-            <dd>18</dd>
-        </dl>
-        <dl class="Strength">
-            <dt>力量</dt>
-            <dd>18</dd>
-        </dl>
-        <dl class="Dexterity">
-            <dt>敏捷</dt>
-            <dd>18</dd>
-        </dl>
-        <dl class="Wisdom">
-            <dt>感知</dt>
-            <dd>18</dd>
-        </dl>
-        <dl class="Charisma">
-            <dt>魅力</dt>
-            <dd>18</dd>
-        </dl>
-    </section>
-    <section class="property">
-        <dl class="casting_spells">
-        </dl>
-    </section>
-    <section class="SpellBook">
-        <dl class="level_0">
-            <dl class=''></dl>
-        </dl>
-        <dl class="level_1">
-            <dl class=''></dl>
-        </dl>
-    </section>
-    <a class="start" href="/search">开始！</a>
+    {%block favorites%}{%endblock%}
 </body>
 <script>
     const roll = () => Math.floor(Math.random() * 256);
