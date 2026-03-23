@@ -1,10 +1,11 @@
-from flask import Flask, render_template
+from flask import Flask, render_template,jsonify
 from db import close_connection,init_db
 from config import Config
 from routes.search import search_bp
 from routes.api import api_bp
 from routes.auth import auth_bp
 from routes.favorites import favo_bp
+from exceptions import *
 
 app = Flask(__name__)
 #注册config用作current.config
@@ -23,8 +24,12 @@ app.register_blueprint(search_bp)
 app.register_blueprint(api_bp)
 app.register_blueprint(auth_bp)
 app.register_blueprint(favo_bp)
-#添加user表，但依赖g对象所以需要在上下文中
 
+@app.errorhandler(UserError)
+def handle_user_error(e):
+    return jsonify(e.to_dict()), e.http_status
+
+#添加user表，但依赖g对象所以需要在上下文中
 with app.app_context():
     init_db()
 

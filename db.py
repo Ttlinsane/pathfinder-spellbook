@@ -2,7 +2,7 @@ import sqlite3
 from flask import g, current_app
 import math
 from argon2 import PasswordHasher
-
+from exceptions import *
 
 def get_db():
     """获取数据库连接"""
@@ -71,8 +71,6 @@ def get_info(kw, page, rpp, classMul, levelMul, schoolMul):
     cursor.execute(search_key, params_tuple)
     row = cursor.fetchall()
     return {"row": row, "ttp": ttp, "total": total}
-
-
 # 添加返回值total，预览总数
 
 
@@ -118,6 +116,11 @@ def register_user(username, password):
     with conn:
         cursor = conn.cursor()
         # 不要静默，重复创建或创建失败需要提示
+        # 重复检验
+        cursor.execute("SELECT * FROM users WHERE username=?",(username.strip(),))
+        i = cursor.fetchall()
+        if i:
+            raise NameCoincidence()
         insert_sql = """INSERT INTO users (username,password_hash) VALUES (?,?)"""
         password_hash = ph.hash(password)
         try:
@@ -129,8 +132,8 @@ def register_user(username, password):
                 ),
             )
             return True
-        except Exception as e:
-            return e
+        except Exception:
+            return False
 
 
 def verify_user(username, password):

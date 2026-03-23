@@ -1,6 +1,7 @@
-from flask import Blueprint,request,session,redirect,render_template,url_for
+from flask import Blueprint,request,session,redirect,render_template,url_for,jsonify
 from db import verify_user,register_user
 from .helpers import login_required
+from exceptions import *
 
 #注意格式！("...",__name__,prefix="...")
 auth_bp = Blueprint("auth",__name__,url_prefix="/auth")
@@ -27,6 +28,8 @@ def register():
     if request.method=="POST":
         username = request.form.get("username")
         password = request.form.get("password")
+        if not str(username).strip() or not str(password).strip():
+            raise EmptyItem()
         if register_user(username,password):
             return redirect(url_for('auth.login'))
         else :
