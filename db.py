@@ -4,6 +4,7 @@ import math
 from argon2 import PasswordHasher
 from exceptions import *
 
+
 def get_db():
     """获取数据库连接"""
     if "db" not in g:
@@ -71,6 +72,8 @@ def get_info(kw, page, rpp, classMul, levelMul, schoolMul):
     cursor.execute(search_key, params_tuple)
     row = cursor.fetchall()
     return {"row": row, "ttp": ttp, "total": total}
+
+
 # 添加返回值total，预览总数
 
 
@@ -91,6 +94,33 @@ def init_db():
     conn = get_db()
     with conn:
         cursor = conn.cursor()
+        cursor.execute(
+            """
+        CREATE TABLE IF NOT EXISTS spells (
+            id          INTEGER PRIMARY KEY AUTOINCREMENT,
+            name        TEXT NOT NULL UNIQUE,
+            level_str   TEXT,
+            school      TEXT,
+            casting_time   TEXT,
+            components  TEXT,
+            range_      TEXT,
+            effect      TEXT,
+            aiming      TEXT,
+            duration    TEXT,
+            saving_throw TEXT,
+            resistance  TEXT,
+            description TEXT
+        )
+    """
+        )
+        cursor.execute(
+            """
+CREATE TABLE IF NOT EXISTS levels(
+                   id    INTEGER PRIMARY KEY AUTOINCREMENT,
+                   name  TEXT NOT NULL,
+                   class Text,
+                   level  TEXT)"""
+        )
         cursor.execute(
             """
 CREATE TABLE IF NOT EXISTS users(
@@ -117,7 +147,7 @@ def register_user(username, password):
         cursor = conn.cursor()
         # 不要静默，重复创建或创建失败需要提示
         # 重复检验
-        cursor.execute("SELECT * FROM users WHERE username=?",(username.strip(),))
+        cursor.execute("SELECT * FROM users WHERE username=?", (username.strip(),))
         i = cursor.fetchall()
         if i:
             raise NameCoincidence()
@@ -149,46 +179,65 @@ def verify_user(username, password):
             return True
         except Exception:
             return False
-        
-#免得之后添加路由又要用add_favorite 之类的容易搞混，这里用favo代favorite得了
-def add_favo(user_id,spell_name):
+
+
+# 免得之后添加路由又要用add_favorite 之类的容易搞混，这里用favo代favorite得了
+def add_favo(user_id, spell_name):
     conn = get_db()
     with conn:
         try:
             cursor = conn.cursor()
-            cursor.execute("INSERT INTO favorites (user_id,spell_name) VALUES (?,?)",(user_id,spell_name,))
-            #get_db 返回的是g对象，不用关闭
-            return True
-        except Exception as e:
-            return e
-        
-def del_favo(user_id,spell_name):
-    conn = get_db()
-    with conn:
-        try:
-            cursor = conn.cursor()
-            cursor.execute("DELETE FROM favorites WHERE user_id=? AND spell_name=?",(user_id,spell_name,))
+            cursor.execute(
+                "INSERT INTO favorites (user_id,spell_name) VALUES (?,?)",
+                (
+                    user_id,
+                    spell_name,
+                ),
+            )
+            # get_db 返回的是g对象，不用关闭
             return True
         except Exception as e:
             return e
 
+
+def del_favo(user_id, spell_name):
+    conn = get_db()
+    with conn:
+        try:
+            cursor = conn.cursor()
+            cursor.execute(
+                "DELETE FROM favorites WHERE user_id=? AND spell_name=?",
+                (
+                    user_id,
+                    spell_name,
+                ),
+            )
+            return True
+        except Exception as e:
+            return e
+
+
 def get_favo_list(user_id):
     conn = get_db()
-    try: #SELECT 是查找，不需要with conn
+    try:  # SELECT 是查找，不需要with conn
         cursor = conn.cursor()
-        cursor.execute("SELECT * FROM favorites f JOIN spells s ON f.spell_name=s.name WHERE f.user_id=?",(user_id,))
+        cursor.execute(
+            "SELECT * FROM favorites f JOIN spells s ON f.spell_name=s.name WHERE f.user_id=?",
+            (user_id,),
+        )
         row = cursor.fetchall()
         results = [dict(r) for r in row]
         return results
     except Exception as e:
         return e
-    
+
+
 def from_name_to_id(user_name):
     conn = get_db()
-    try: 
+    try:
         cursor = conn.cursor()
-        cursor.execute("SELECT id FROM users WHERE username=?",(user_name,))
+        cursor.execute("SELECT id FROM users WHERE username=?", (user_name,))
         row = cursor.fetchone()
-        return dict(row)["id"]  #返回时就转dict
+        return dict(row)["id"]  # 返回时就转dict
     except Exception as e:
         return e

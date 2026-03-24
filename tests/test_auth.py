@@ -1,25 +1,4 @@
-import pytest
-
-# 从你的主文件导入 app
-from app import app
-from db import init_db
 from exceptions import *
-
-# @pytest.fixture 告诉 pytest：这是一个战前准备工作
-@pytest.fixture
-def client(tmp_path):
-    # 1. 在临时目录下创建一个测试专用数据库路径
-    test_db = tmp_path / "test.db"
-    
-    # 2. 告诉 Flask：别用生产数据库了，用这个临时的
-    app.config.update({
-        "TESTING": True,
-        "DATABASE": str(test_db),
-    })
-    with app.test_client() as client:
-        with app.app_context():
-            init_db()
-        yield client
 
 def test_register_page_loads(client):
     # 1. 隐形顾客发送 GET 请求访问注册页

@@ -28,7 +28,7 @@ def api_spell():
         "rpp": rpp,
         "results": results,
     }
-    return jsonify(results_json)
+    return jsonify(results_json),200
 
 
 @api_bp.route("/spells/<spell_name>")
@@ -36,6 +36,7 @@ def spell_detail(spell_name):
     rows, rowl = get_details(spell_name)
     # 解包，解包！
     result_json = {"error": "Spell not found"}
+    result_code = 404
     if rows:
         level_l = {i[0]: i[1] for i in rowl if i}
         result_json = {
@@ -52,5 +53,6 @@ def spell_detail(spell_name):
             "resistance": rows["resistance"],
             "description": rows["description"],
         }
-        return jsonify(result_json)
-    return jsonify(result_json), 404
+        result_code = 200
+        return jsonify(result_json), result_code
+    return jsonify(result_json), result_code

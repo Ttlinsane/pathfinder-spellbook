@@ -1,4 +1,5 @@
 from pathlib import Path
+import os
 
 BASE_DIR = Path(__file__).parent
 
@@ -13,5 +14,16 @@ class Config:
     # 默认每页显示条数（原来 search.py 里的 25）
     ITEMS_PER_PAGE = 25
 
-    # 是这么来的吗？
-    SECRET_KEY = "f4as5f64as56f"
+    SECRET_KEY = "dev-secret-key-不要用于生产"
+
+class DevConfig(Config):
+    """开发环境"""
+    DEBUG = True
+
+class TestConfig(Config):
+    """测试环境"""
+    TESTING = True
+
+class ProdConfig(Config):
+    """生产环境"""
+    SECRET_KEY = os.environ.get("SECRET_KEY")
