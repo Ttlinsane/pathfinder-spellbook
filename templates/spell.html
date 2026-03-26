@@ -5,6 +5,7 @@
     {% for spell in results %}
     <a href="/search/{{spell.name}}">{{spell.name}}</a>
     <form action="/user/add" method="POST">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
         <input type="hidden" name="spell_name" value="{{spell.name}}">
         <button type="submit">⭐</button>
     </form>

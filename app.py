@@ -6,6 +6,7 @@ from routes.api import api_bp
 from routes.auth import auth_bp
 from routes.favorites import favo_bp
 from exceptions import *
+from flask_wtf.csrf import CSRFProtect
 
 def create_app(config_class=Config):
     app = Flask(__name__)
@@ -24,6 +25,9 @@ def create_app(config_class=Config):
     app.register_blueprint(api_bp)
     app.register_blueprint(auth_bp)
     app.register_blueprint(favo_bp)
+    
+    csrf = CSRFProtect()
+    csrf.init_app(app)
 
     @app.errorhandler(UserError)
     def handle_user_error(e):

@@ -1,7 +1,8 @@
 # 忽略所有层级的 Python 缓存（注意去掉了末尾的斜杠，且确保拼写正确！）
 __pycache__
 *.pyc
-
+.coverage
+.pytest_cache
 # 忽略虚拟环境
 .venv
 venv

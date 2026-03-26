@@ -23,6 +23,7 @@ class DevConfig(Config):
 class TestConfig(Config):
     """测试环境"""
     TESTING = True
+    WTF_CSRF_ENABLED = False
 
 class ProdConfig(Config):
     """生产环境"""
