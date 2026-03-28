@@ -1,4 +1,5 @@
-import sqlite3
+import psycopg2
+from psycopg2.extras import RealDictCursor
 from flask import g, current_app
 import math
 from argon2 import PasswordHasher
@@ -8,8 +9,9 @@ from exceptions import *
 def get_db():
     """获取数据库连接"""
     if "db" not in g:
-        g.db = sqlite3.connect(current_app.config["DATABASE"])
-        g.db.row_factory = sqlite3.Row
+        g.db = psycopg2.connect(
+            current_app.config["DATABASE_URL"], cursor_factory=RealDictCursor
+        )
     return g.db
 
 
@@ -33,15 +35,19 @@ def get_info(kw, page, rpp, classMul, levelMul, schoolMul):
     # 这里也用列表方便干净
     params = []
     if kw:
-        search_key += " AND (s.name LIKE ? OR s.description LIKE ? OR s.effect LIKE ?)"
-        count_key += " AND (s.name LIKE ? OR s.description LIKE ? OR s.effect LIKE ?)"
+        search_key += (
+            " AND (s.name ILIKE %s OR s.description ILIKE %s OR s.effect ILIKE %s)"
+        )
+        count_key += (
+            " AND (s.name ILIKE %s OR s.description ILIKE %s OR s.effect ILIKE %s)"
+        )
         params.extend([f"%{kw}%", f"%{kw}%", f"%{kw}%"])
     if classMul:
-        search_key += " AND l.class = ?"
-        count_key += " AND l.class = ?"
+        search_key += " AND l.class = %s"
+        count_key += " AND l.class = %s"
         params.extend([f"{classMul}"])
     if levelMul:
-        levels_quest = ",".join("?" for _ in levelMul)
+        levels_quest = ",".join("%s" for _ in levelMul)
         search_key += f" AND l.level IN ({levels_quest})"
         count_key += f" AND l.level IN ({levels_quest})"
         params.extend(levelMul)
@@ -57,15 +63,15 @@ def get_info(kw, page, rpp, classMul, levelMul, schoolMul):
             "塑能",
             "通用",
         ]
-    placeholder = ",".join("?" for _ in schoolMul)
+    placeholder = ",".join("%s" for _ in schoolMul)
     search_key += f" AND s.school IN ({placeholder})"
     count_key += f" AND s.school IN ({placeholder})"
     params.extend(schoolMul)
     # 收集完毕，开始找总页码
     cursor.execute(count_key, tuple(params))
-    total = cursor.fetchone()[0]
+    total = cursor.fetchone()["count"]
     ttp = math.ceil(total / rpp)
-    search_key += " LIMIT ? OFFSET ?"
+    search_key += " ORDER BY s.name LIMIT %s OFFSET %s"
     params.extend([rpp, offset])
     params_tuple = tuple(params)
     # 找结果
@@ -80,11 +86,9 @@ def get_info(kw, page, rpp, classMul, levelMul, schoolMul):
 def get_details(spell_name):
     conn = get_db()
     cursor = conn.cursor()
-    cursor.execute("SELECT * FROM spells WHERE name=? COLLATE NOCASE", (spell_name,))
+    cursor.execute("SELECT * FROM spells WHERE name ILIKE %s ", (spell_name,))
     rows = cursor.fetchone()
-    cursor.execute(
-        "SELECT class,level FROM levels WHERE name=? COLLATE NOCASE", (spell_name,)
-    )
+    cursor.execute("SELECT class,level FROM levels WHERE name ILIKE %s ", (spell_name,))
     rowl = cursor.fetchall()
     return (rows, rowl)
 
@@ -97,7 +101,7 @@ def init_db():
         cursor.execute(
             """
         CREATE TABLE IF NOT EXISTS spells (
-            id          INTEGER PRIMARY KEY AUTOINCREMENT,
+            id          SERIAL PRIMARY KEY,
             name        TEXT NOT NULL UNIQUE,
             level_str   TEXT,
             school      TEXT,
@@ -116,7 +120,7 @@ def init_db():
         cursor.execute(
             """
 CREATE TABLE IF NOT EXISTS levels(
-                   id    INTEGER PRIMARY KEY AUTOINCREMENT,
+                   id    SERIAL PRIMARY KEY,
                    name  TEXT NOT NULL,
                    class Text,
                    level  TEXT)"""
@@ -124,7 +128,7 @@ CREATE TABLE IF NOT EXISTS levels(
         cursor.execute(
             """
 CREATE TABLE IF NOT EXISTS users(
-                id            INTEGER PRIMARY KEY AUTOINCREMENT,
+                id            SERIAL PRIMARY KEY,
                 username      TEXT UNIQUE NOT NULL,
                 password_hash TEXT NOT NULL,
                 create_at     TIMESTAMP DEFAULT CURRENT_TIMESTAMP)"""
@@ -147,11 +151,11 @@ def register_user(username, password):
         cursor = conn.cursor()
         # 不要静默，重复创建或创建失败需要提示
         # 重复检验
-        cursor.execute("SELECT * FROM users WHERE username=?", (username.strip(),))
+        cursor.execute("SELECT * FROM users WHERE username=%s", (username.strip(),))
         i = cursor.fetchall()
         if i:
             raise NameCoincidence()
-        insert_sql = """INSERT INTO users (username,password_hash) VALUES (?,?)"""
+        insert_sql = """INSERT INTO users (username,password_hash) VALUES (%s,%s)"""
         password_hash = ph.hash(password)
         try:
             cursor.execute(
@@ -170,7 +174,7 @@ def verify_user(username, password):
     conn = get_db()
     cursor = conn.cursor()
     ph = PasswordHasher()
-    cursor.execute("SELECT password_hash FROM users WHERE username=?", (username,))
+    cursor.execute("SELECT password_hash FROM users WHERE username=%s", (username,))
     verify_pw = cursor.fetchone()  # 返回sqlite3.Row对象
     if verify_pw:
         try:
@@ -188,7 +192,7 @@ def add_favo(user_id, spell_name):
         try:
             cursor = conn.cursor()
             cursor.execute(
-                "INSERT INTO favorites (user_id,spell_name) VALUES (?,?)",
+                "INSERT INTO favorites (user_id,spell_name) VALUES (%s,%s)",
                 (
                     user_id,
                     spell_name,
@@ -206,7 +210,7 @@ def del_favo(user_id, spell_name):
         try:
             cursor = conn.cursor()
             cursor.execute(
-                "DELETE FROM favorites WHERE user_id=? AND spell_name=?",
+                "DELETE FROM favorites WHERE user_id=%s AND spell_name=%s",
                 (
                     user_id,
                     spell_name,
@@ -222,11 +226,11 @@ def get_favo_list(user_id):
     try:  # SELECT 是查找，不需要with conn
         cursor = conn.cursor()
         cursor.execute(
-            "SELECT * FROM favorites f JOIN spells s ON f.spell_name=s.name WHERE f.user_id=?",
+            "SELECT * FROM favorites f JOIN spells s ON f.spell_name=s.name WHERE f.user_id=%s",
             (user_id,),
         )
         row = cursor.fetchall()
-        results = [dict(r) for r in row]
+        results = row  # postgre返回的是字典列表
         return results
     except Exception as e:
         return e
@@ -236,8 +240,8 @@ def from_name_to_id(user_name):
     conn = get_db()
     try:
         cursor = conn.cursor()
-        cursor.execute("SELECT id FROM users WHERE username=?", (user_name,))
+        cursor.execute("SELECT id FROM users WHERE username=%s", (user_name,))
         row = cursor.fetchone()
-        return dict(row)["id"]  # 返回时就转dict
+        return row["id"]
     except Exception as e:
         return e
